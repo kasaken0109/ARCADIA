@@ -9,6 +9,7 @@ public class PlayerInputController : MonoBehaviour
     PlayerControll _playerControll;
     BulletFire _bulletFire;
     BulletSelectController _bulletSelectController;
+    CameraController _cameraController;
     // Start is called before the first frame update
     private void Awake()
     {
@@ -16,6 +17,7 @@ public class PlayerInputController : MonoBehaviour
         TryGetComponent(out _playerControll);
         _bulletFire = FindObjectOfType<BulletFire>();
         _bulletSelectController = FindObjectOfType<BulletSelectController>();
+        _cameraController = FindObjectOfType<CameraController>();
     }
 
     private void OnEnable()
@@ -30,10 +32,13 @@ public class PlayerInputController : MonoBehaviour
         _playerInput.actions["Run"].performed += OnRun;
         _playerInput.actions["Run"].canceled += OnRunCanceled;
         _playerInput.actions["Attack"].started += OnAttack;
-        _playerInput.actions["Attack"].canceled += OnAttackCanceled;
+        _playerInput.actions["SpecialAttack"].started += OnSpecialAttack;
 
 
         _playerInput.actions["Option"].started += OnMenu;
+        _playerInput.actions["LockOn"].performed += OnLockOn;
+       // NewTest a = new NewTest();
+        //a.Player.Move.performed += contexet => _playerControll.Move(Vector3.zero); 
     }
 
     private void OnDisable()
@@ -47,7 +52,10 @@ public class PlayerInputController : MonoBehaviour
         _playerInput.actions["BulletSelect"].started += OnBulletSelect;
         _playerInput.actions["Run"].performed -= OnRun;
         _playerInput.actions["Run"].canceled -= OnRunCanceled;
+        _playerInput.actions["Attack"].started -= OnAttack;
+        _playerInput.actions["SpecialAttack"].started -= OnSpecialAttack;
         _playerInput.actions["Option"].started -= OnMenu;
+        _playerInput.actions["LockOn"].performed -= OnLockOn;
     }
     private void FixedUpdate()
     {
@@ -104,16 +112,22 @@ public class PlayerInputController : MonoBehaviour
     }
     private void OnAttack(InputAction.CallbackContext obj)
     {
-        _playerControll.BasicAttackActive(true);
+        _playerControll.BasicAttackActive();
     }
 
-    private void OnAttackCanceled(InputAction.CallbackContext obj)
+    private void OnSpecialAttack(InputAction.CallbackContext obj)
     {
-        _playerControll.BasicAttackActive(false);
+        _playerControll.SpecialAttackActive();
     }
+
 
     private void OnMenu(InputAction.CallbackContext obj)
     {
         GameManager.Instance.SetMenu();
+    }
+
+    private void OnLockOn(InputAction.CallbackContext obj)
+    {
+        _cameraController.LockON();
     }
 }

@@ -18,7 +18,7 @@ public class UISelectInput : MonoBehaviour
     private bool IsActiveMode = false;
 
     ButtonSelectController _buttonSelectController;
-    // Start is called before the first frame update
+
     void Awake()
     {
         TryGetComponent(out _playerInput);
@@ -26,21 +26,20 @@ public class UISelectInput : MonoBehaviour
     }
     private void OnEnable()
     {
-        if(IsActiveMode)_playerInput.actions["Move"].started += OnSelectButton;
         _playerInput.actions["Back"].started += OnBackScene;
         _playerInput.actions["GoQuest"].started += OnGoQuest;
     }
 
     private void OnDisable()
     {
-        _playerInput.actions["Move"].started -= OnSelectButton;
         _playerInput.actions["Back"].started -= OnBackScene;
         _playerInput.actions["GoQuest"].started -= OnGoQuest;
     }
 
-    private void OnSelectButton(InputAction.CallbackContext obj)
+    public void OnSelectButton(InputAction.CallbackContext obj)
     {
         _buttonSelectController.ButtonSelect(obj.ReadValue<Vector2>());
+        Debug.Log("Connection");
     }
 
     private void OnBackScene(InputAction.CallbackContext obj)
@@ -57,6 +56,6 @@ public class UISelectInput : MonoBehaviour
     void Update()
     {
         var gamepad = Gamepad.current;
-        _buttonSelectController.enabled = gamepad != null;
+        //_buttonSelectController.enabled = gamepad != null;
     }
 }
