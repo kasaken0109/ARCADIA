@@ -48,29 +48,31 @@ public class CameraController : MonoBehaviour
         _cinemachinePOV.m_HorizontalAxis.Value = -180;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void LockOff()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            LockON();
-        }
-        else if (Input.GetKeyDown(KeyCode.Z))
-        {
-            m_playerCamera.transform.LookAt(m_lockOnTargets[lockOnId].transform);
-            m_playerCamera.GetCinemachineComponent<CinemachinePOV>().GetRecenterTarget();
-            ResetCam();
-            m_lockOnCamera.Priority = 0;
-            lockOnId = 0;
-            m_lockOnTargets = SetSearchTarget("Enemy");
-        }
+        m_playerCamera.transform.LookAt(m_lockOnTargets[lockOnId].transform);
+        m_playerCamera.GetCinemachineComponent<CinemachinePOV>().GetRecenterTarget();
+        ResetCam();
+        m_lockOnCamera.Priority = 0;
+        lockOnId = 0;
+        m_lockOnTargets = SetSearchTarget("Enemy");
     }
 
-    private void LockON()
+    bool IsLockOn;
+    public void LockON()
     {
-        lockOnId = lockOnId == m_lockOnTargets.Length - 1 ? 0 : lockOnId + 1;
-        m_lockOnCamera.LookAt = m_lockOnTargets[lockOnId].transform;
-        m_lockOnCamera.Priority = cameraPriority;
+        if (!IsLockOn)
+        {
+            lockOnId = lockOnId == m_lockOnTargets.Length - 1 ? 0 : lockOnId + 1;
+            m_lockOnCamera.LookAt = m_lockOnTargets[lockOnId].transform;
+            m_lockOnCamera.Priority = cameraPriority;
+        }
+        else
+        {
+            LockOff();
+        }
+        IsLockOn = !IsLockOn;
+        
     }
 
     ///// <summary>
