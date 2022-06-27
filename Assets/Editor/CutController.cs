@@ -10,7 +10,6 @@ public class CutController : MonoBehaviour
     [SerializeField] private GameObject[] m_cutObjects = null;
     [SerializeField] private GameObject m_cutplane = null;
     [SerializeField] private Material m_cutMaterial = null;
-    [SerializeField] private float m_cutPower = 3f;
     [SerializeField]LineRenderer lineRenderer;
     Vector3 worldPos;
     Vector3 pos;
@@ -18,13 +17,11 @@ public class CutController : MonoBehaviour
     private MeshCut meshCut;
     private MeshFilter plane;
     GameObject[] cutObjects;
-    bool IsFirst = true;
     Vector3[] col;
     // Start is called before the first frame update
     void Start()
     {
         plane = m_cutplane.GetComponent<MeshFilter>();
-        IsFirst = true;
     }
 
     // Update is called once per frame
@@ -111,7 +108,6 @@ public class CutController : MonoBehaviour
         worldPos = Camera.main.ScreenToWorldPoint(pos);
         lineRenderer.SetPosition(1, new Vector3(worldPos.x, worldPos.y, 1));
         //lineRenderer.SetPosition(1, new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1));
-        IsFirst = false;
         CutObject(m_cutMode);
     }
 }
