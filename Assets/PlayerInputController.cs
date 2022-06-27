@@ -10,7 +10,8 @@ public class PlayerInputController : MonoBehaviour
     BulletFire _bulletFire;
     BulletSelectController _bulletSelectController;
     CameraController _cameraController;
-    // Start is called before the first frame update
+
+    Vector3 dir;
     private void Awake()
     {
         TryGetComponent(out _playerInput);
@@ -22,8 +23,6 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnEnable()
     {
-        //_playerInput.actions["Move"].performed += OnMove;
-        //_playerInput.actions["Move"].canceled += OnMoveCanceled;
         _playerInput.actions["Jump"].started += OnJump;
         _playerInput.actions["Fire"].started += OnFire;
         _playerInput.actions["Dodge"].started += OnDodge;
@@ -43,8 +42,6 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnDisable()
     {
-        //_playerInput.actions["Move"].performed -= OnMove;
-        //_playerInput.actions["Move"].canceled -= OnMoveCanceled;
         _playerInput.actions["Jump"].started -= OnJump;
         _playerInput.actions["Fire"].started -= OnFire;
         _playerInput.actions["Dodge"].started -= OnDodge;
@@ -60,7 +57,7 @@ public class PlayerInputController : MonoBehaviour
     private void FixedUpdate()
     {
         var direction = _playerInput.actions["Move"].ReadValue<Vector2>();
-        var dir = new Vector3(direction.x, 0, direction.y);
+        dir = new Vector3(direction.x, 0, direction.y);
         _playerControll.Move(dir);
     }
 
@@ -88,7 +85,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnDodge(InputAction.CallbackContext obj)
     {
-        _playerControll.Dodge();
+        _playerControll.Dodge(dir);
     }
 
     private void OnSelect(InputAction.CallbackContext obj)
