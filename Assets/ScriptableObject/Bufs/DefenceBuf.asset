@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5cbc156a1a23fa428af3abeb83268b1, type: 3}
+  m_Name: DefenceBuf
+  m_EditorClassIdentifier: 
+  passiveType: 1
+  effectableTime: 5
+  effectAmount: 2
+  consumeCost: 0.2
+  explainText: "\u9632\u5FA1\u529B\u304C5\u79D2\u95932\u500D\u306B\u306A\u308B"
+  skillName: "\u9632\u5FA1\u529B\u5F37\u5316"
+  image: {fileID: 21300000, guid: 6de70bd523d3f4c43bffe7cb417f57ab, type: 3}
+  m_effect: {fileID: 1200060526561908642, guid: da3c14d5b3af6af4897ca2097ea82bbd,
+    type: 3}

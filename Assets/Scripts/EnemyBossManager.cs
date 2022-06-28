@@ -56,6 +56,7 @@ public class EnemyBossManager : MonoBehaviour, IDamage
         hitSpeed = (float)(damage / 10f);
         StopCoroutine(HitStop());
         StartCoroutine(HitStop());
+        MotorShaker.Instance.Call(ShakeType.Hit, 8 * damage / maxHp);
         if (m_hp < maxHp * 0.5f && count == 0)
         {
             StartCoroutine(nameof(DeathCombo));
@@ -94,7 +95,7 @@ public class EnemyBossManager : MonoBehaviour, IDamage
                 1f  // 時間（秒）
                 ).SetEase(Ease.OutCubic);
             Instantiate(m_deathBody,this.transform.position,this.transform.rotation);
-            GameManager.Instance.SetGameState(GameManager.GameState.PLAYERWIN);
+            GameManager.Instance.SetGameState(GameState.PLAYERWIN);
             Destroy(this.gameObject);
         }
     }

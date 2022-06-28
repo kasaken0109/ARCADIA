@@ -22,6 +22,10 @@ public class AttackcolliderController : MonoBehaviour
     private GameObject m_hitEffect = null;
 
     [SerializeField]
+    [Tooltip("呼ぶオブジェクト")]
+    private GameObject _call;
+
+    [SerializeField]
     [Tooltip("ヒットサウンド")]
     private AudioClip m_hit;
 
@@ -84,31 +88,15 @@ public class AttackcolliderController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Item")) other.gameObject.GetComponentInParent<IDamage>().AddDamage(attackPower);
+        if (other.CompareTag("Item")) other.gameObject.GetComponentInParent<IDamage>().AddDamage(attackPower,ref _call);
         
         if (other.CompareTag(m_opponentTagName) && CanHit)
         {
-            var frostAttack = other.GetComponentInChildren<FrostAttackController>();
-            if (frostAttack)
-            {
-                other.gameObject.GetComponentInParent<IDamage>().AddDamage(Mathf.CeilToInt(frostattackPower * frostAttack.Damage * attackCorrectionValue) );
-                Destroy(frostAttack.gameObject);
-            }
+            var idmg = other.gameObject.GetComponentInParent<IDamage>();
+            idmg = idmg == null ? other.gameObject.GetComponent<IDamage>() : idmg;
+            idmg.AddDamage(Mathf.CeilToInt(attackPower / defenceCorrectionValue),ref _call);
 
-            var stance = GetComponentInParent<PlayerControll>();
-            if (stance)
-            {
-                stance.AddStanceValue(m_upStanceValue);
-                other.gameObject.GetComponentInParent<IDamage>().AddDamage(Mathf.CeilToInt(attackPower * attackCorrectionValue));
-            }
-            else
-            {
-                var idmg = other.gameObject.GetComponentInParent<IDamage>();
-                idmg = idmg == null ? other.gameObject.GetComponent<IDamage>() : idmg;
-                idmg.AddDamage(Mathf.CeilToInt(attackPower / defenceCorrectionValue));
-            }
-
-            if(m_hit)SoundManager.Instance.PlayHit(m_hit,gameObject.transform.position);
+            if (m_hit)SoundManager.Instance.PlayHit(m_hit,gameObject.transform.position);
             if(m_hitEffect) Instantiate(m_hitEffect, other.ClosestPoint(transform.position), GameManager.Player.transform.rotation);
             CanHit = false;
         }

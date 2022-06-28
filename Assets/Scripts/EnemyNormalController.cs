@@ -29,7 +29,7 @@ public class EnemyNormalController : MonoBehaviour,IDamage
         {
             Instantiate(m_deadBody, transform.position, transform.rotation);
             m_gate.SetActive(true);
-            GameManager.Instance.SetGameState(GameManager.GameState.PLAYERWIN);
+            GameManager.Instance.SetGameState(GameState.PLAYERWIN);
             Destroy(this.gameObject);
         }
 
