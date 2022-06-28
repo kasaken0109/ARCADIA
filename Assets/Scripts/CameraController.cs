@@ -14,12 +14,17 @@ public class CameraController : MonoBehaviour
     [Tooltip("プレイヤーのカメラ")]
     CinemachineVirtualCamera m_playerCamera = default;
 
+    /// <summary>ロックオン機能の対象</summary>
     private GameObject[] m_lockOnTargets;
 
+    /// <summary>プレイヤー</summary>
     private GameObject m_player;
 
-    private static int cameraPriority = 15;
 
+    /// <summary>カメラ切り替え時に使用するpriority</summary>
+    private readonly int cameraPriority = 15;
+
+    /// <summary>現在ロックオンしている敵のID</summary>
     private int lockOnId = 0;
 
     private CinemachinePOV _cinemachinePOV;
@@ -27,27 +32,38 @@ public class CameraController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_player = GameObject.FindGameObjectWithTag("Player");
-        m_lockOnTargets = SetSearchTarget("Enemy");
-        _cinemachinePOV = m_playerCamera.GetCinemachineComponent<CinemachinePOV>();
-        lockOnId = 0;
+        CamInit();
     }
 
     private void OnEnable()
+    {
+        CamInit();
+        ResetCam();
+    }
+
+    /// <summary>
+    /// カメラの初期化を行う
+    /// </summary>
+    private void CamInit()
     {
         m_player = GameObject.FindGameObjectWithTag("Player");
         m_lockOnTargets = SetSearchTarget("Enemy");
         _cinemachinePOV = m_playerCamera.GetCinemachineComponent<CinemachinePOV>();
         lockOnId = 0;
-        ResetCam();
     }
 
+    /// <summary>
+    /// ロックオン機能終了時にカメラリセットを行う
+    /// </summary>
     private void ResetCam()
     {
         _cinemachinePOV.m_VerticalAxis.Value = 0;
         _cinemachinePOV.m_HorizontalAxis.Value = -180;
     }
 
+    /// <summary>
+    /// ロックオン機能を終了する
+    /// </summary>
     private void LockOff()
     {
         m_playerCamera.transform.LookAt(m_lockOnTargets[lockOnId].transform);
@@ -59,6 +75,10 @@ public class CameraController : MonoBehaviour
     }
 
     bool IsLockOn;
+
+    /// <summary>
+    /// ロックオン機能を起動、起動中は対象を切り替える
+    /// </summary>
     public void LockON()
     {
         if (!IsLockOn)
@@ -67,12 +87,20 @@ public class CameraController : MonoBehaviour
             m_lockOnCamera.LookAt = m_lockOnTargets[lockOnId].transform;
             m_lockOnCamera.Priority = cameraPriority;
         }
-        else
-        {
-            LockOff();
-        }
+        else LockOff();
         IsLockOn = !IsLockOn;
         
+    }
+
+    /// <summary>
+    /// ロックオン対象の敵がいなくなった時の処理を行う
+    /// </summary>
+    public void RetargetTargetCam()
+    {
+        if (!IsLockOn) return;
+        m_lockOnTargets = SetSearchTarget("Enemy");
+        if (m_lockOnTargets.Length == 0) LockOff();
+        else LockON();
     }
 
     ///// <summary>
@@ -85,6 +113,12 @@ public class CameraController : MonoBehaviour
     //    return FindObjectsOfType<GameObject>();
     //}
 
+
+    /// <summary>
+    /// 対象のタグを持つルートオブジェクトを検索する
+    /// </summary>
+    /// <param name="tag">対象タグ名</param>
+    /// <returns>ロックオン対象のオブジェクト(プレイヤーとの距離が近い順)</returns>
     public GameObject[] SetSearchTarget(string tag)
     {
         var target = GameObject.FindGameObjectsWithTag(tag);
