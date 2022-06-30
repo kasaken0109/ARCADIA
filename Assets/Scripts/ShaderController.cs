@@ -9,11 +9,14 @@ public class ShaderController : MonoBehaviour
     private GameObject _gameObject = default;
     float _time = 0;
     bool IsStopped = false;
+    Image render;
 
     // Start is called before the first frame update
     void Start()
     {
         _time = 0;
+        render = GetComponent<Image>();
+        render.material = null;
     }
 
     // Update is called once per frame
@@ -25,7 +28,6 @@ public class ShaderController : MonoBehaviour
     public void SetMaterialProparty(Material material)
     {
         IsStopped = false;
-        var render = GetComponent<Image>();
         if (render)
         {
             render.material = material;

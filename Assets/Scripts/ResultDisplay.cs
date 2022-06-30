@@ -57,7 +57,6 @@ public class ResultDisplay : MonoBehaviour
         float time = 0;
         while (time < m_waitDisplay)
         {
-            if (Input.GetButton("Fire1")) break;
             m_time.text = Random.Range(1, 1000).ToString();
             time += 0.01f;
             yield return new WaitForSeconds(0.01f);
