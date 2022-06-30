@@ -1,30 +1,41 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
 using UnityEngine.SceneManagement;
 using Cinemachine;
 using DG.Tweening;
+
+public enum GameState
+{
+    START,
+    PLAYING,
+    STOP,
+    RESUME,
+    PLAYERWIN,
+    PLAYERLOSE,
+}
 public class GameManager : MonoBehaviour
 {
-
-    [SerializeField]
-    private GameObject m_bossEnemy = null;
-
     [SerializeField]
     [Tooltip("プレイヤーのバーチャルカメラ")]
     private CinemachineVirtualCamera virtualCamera = default;
 
     [SerializeField]
-    [Tooltip("メニュー")]
+    [Tooltip("メニューオブジェクト")]
     private GameObject menu = default;
 
     [SerializeField]
+    [Tooltip("勝利オブジェクト")]
     private GameObject m_win = null;
 
     [SerializeField]
+    [Tooltip("勝利時のゲートオブジェクト")]
     private GameObject m_gate = null;
 
     [SerializeField]
+    [Tooltip("敗北オブジェクト")]
     private GameObject m_lose = null;
 
     [SerializeField]
@@ -54,12 +65,18 @@ public class GameManager : MonoBehaviour
         SetGameState(GameState.START);
     }
 
+    /// <summary>
+    /// メニュー開閉をする
+    /// </summary>
     public void SetMenu()
     {
         myGameState = !menu.activeInHierarchy ? GameState.STOP : GameState.RESUME;
         SetGameConnditoin();
     }
 
+    /// <summary>
+    /// ゲームの状態に応じた処理を実行する
+    /// </summary>
     private void SetGameConnditoin()
     {
         switch (myGameState)
@@ -95,6 +112,7 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.PLAYERLOSE:
                 m_lose.SetActive(true);
+                m_lose.GetComponentInChildren<Button>().onClick.Invoke();
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.Confined;
                 m_timerManager.SaveTime();
@@ -104,28 +122,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// ゲームの状態を設定する
+    /// </summary>
+    /// <param name="gameState">ゲームの状態</param>
     public void SetGameState(GameState gameState)
     {
         myGameState = gameState;
         SetGameConnditoin();
     }
 
+    /// <summary>
+    /// ゲームの状態を設定する
+    /// </summary>
+    /// <param name="value">ゲームの状態</param>
     public void SetGameState(int value) => SetGameState((GameState)value);
 
     private GameState myGameState;
 
     public GameState GameStatus => myGameState;
-
-    public enum GameState
-    {
-        START,
-        PLAYING,
-        STOP,
-        RESUME,
-        PLAYERWIN,
-        PLAYERLOSE,
-
-    }
 
     private void OnDestroy()
     {
