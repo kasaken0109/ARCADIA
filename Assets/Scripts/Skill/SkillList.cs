@@ -6,8 +6,8 @@ using UnityEngine;
 public class SkillList : ScriptableObject
 {
     [SerializeField]
-    private List<PassiveSkill> _skills = default;
+    private List<CustomSkill> _skills = default;
 
-    public List<PassiveSkill> Skills => _skills;
+    public List<CustomSkill> Skills => _skills;
 }
 
