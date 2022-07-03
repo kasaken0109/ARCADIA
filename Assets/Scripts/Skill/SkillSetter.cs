@@ -6,6 +6,6 @@ public class SkillSetter : MonoBehaviour
 {
     public void DataSetter(int value)
     {
-        EquipmentManager.Instance.SetEquipSkillID(value);
+        //EquipmentManager.Instance.SetEquipSkillID(value);
     }
 }
