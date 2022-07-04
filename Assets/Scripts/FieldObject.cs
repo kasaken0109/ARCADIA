@@ -10,7 +10,7 @@ public class FieldObject : MonoBehaviour,IDamage
     [SerializeField]
     [Tooltip("破壊時に生成されるオブジェクト")]
     GameObject m_instance = default;
-    public void AddDamage(int damage)
+    public void AddDamage(int damage ,ref GameObject call)
     {
         m_hp = m_hp > damage ? m_hp - damage : 0;
         if (m_hp == 0) 

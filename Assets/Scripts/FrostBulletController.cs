@@ -36,7 +36,7 @@ public class FrostBulletController : MonoBehaviour
         }
         else if (collision.collider.tag == "Enemy" || collision.collider.tag == "Item")
         {
-            collision.gameObject.GetComponentInParent<IDamage>().AddDamage(m_attackpower);
+            collision.gameObject.GetComponentInParent<IDamage>().AddDamage(m_attackpower,ref m_freeze);
             foreach (ContactPoint point in collision.contacts) hitPos = point.point;
             IsCreateWall = false;
             Destroy(this.gameObject);
