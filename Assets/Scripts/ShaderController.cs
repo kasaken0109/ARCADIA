@@ -6,10 +6,14 @@ using UnityEngine.UI;
 public class ShaderController : MonoBehaviour
 {
     [SerializeField]
-    private GameObject _gameObject = default;
+    GameObject _gameObject = default;
+    [SerializeField]
+    Material _set = default;
     float _time = 0;
     bool IsStopped = false;
-    Image render;
+    Image render; 
+    Material set;
+    float timeUntilSceneStart;
 
     // Start is called before the first frame update
     void Start()
@@ -17,6 +21,7 @@ public class ShaderController : MonoBehaviour
         _time = 0;
         render = GetComponent<Image>();
         render.material = null;
+        timeUntilSceneStart = Time.time;
     }
 
     // Update is called once per frame
@@ -25,13 +30,13 @@ public class ShaderController : MonoBehaviour
         if (!IsStopped) _time += Time.deltaTime;
     }
 
-    public void SetMaterialProparty(Material material)
+    public void SetMaterialProparty()
     {
         IsStopped = false;
         if (render)
         {
-            render.material = material;
-            render.material.SetFloat("_TimeScale", _time);
+            render.material = _set;
+            render.material.SetFloat("_TimeScale", timeUntilSceneStart + _time);
         }
         else
         {
