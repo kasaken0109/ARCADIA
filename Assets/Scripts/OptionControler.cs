@@ -2,19 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class OptionControler : MonoBehaviour
 {
     [SerializeField]
-    private Slider _se;
+    Slider _se;
 
     [SerializeField]
-    private Slider _bgm;
-    private void Awake()
+    Slider _bgm;
+
+    [SerializeField]
+    Selectable _selectable;
+
+    EventSystem eventSystem;
+    void OnEnable()
     {
+        Debug.Log("Awake");
+        eventSystem = FindObjectOfType<EventSystem>();
+        _se.Select();
         ///‰¹—Ê‚ðslider‚Ì’l‚É”½‰f‚³‚¹‚é
         _se.value = SoundManager.Instance.GetSEVolume();
         _bgm.value = SoundManager.Instance.GetBGMVolume();
+        
+    }
+
+    void OnDisable()
+    {
+        _selectable.Select();
     }
 
     /// <summary>
