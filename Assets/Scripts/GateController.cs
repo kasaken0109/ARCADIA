@@ -2,16 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// ゲートの処理を制御する
+/// </summary>
 public class GateController : MonoBehaviour
 {
     [SerializeField]
-    private GameObject m_camera = null;
+    [Tooltip("カメラオブジェクト")]
+    GameObject _camera = null;
+
+    [SerializeField]
+    [Tooltip("ズームする時間")]
+    float _zoomTime = 2f;
     void Start()
     {
         StartCoroutine(nameof(ZoomMe));
     }
 
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
@@ -20,10 +28,14 @@ public class GateController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// ズームカメラを有効にする
+    /// </summary>
+    /// <returns></returns>
     IEnumerator ZoomMe()
     {
-        m_camera?.SetActive(true);
-        yield return new WaitForSeconds(1f);
-        m_camera?.SetActive(false);
+        _camera?.SetActive(true);
+        yield return new WaitForSeconds(_zoomTime);
+        _camera?.SetActive(false);
     }
 }
