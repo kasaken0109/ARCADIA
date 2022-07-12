@@ -51,6 +51,6 @@ public class FrostBulletController : MonoBehaviour
         obj.transform.position = new Vector3(hitPos.x , -1.38f, hitPos.z);
         Quaternion look = Quaternion.FromToRotation(transform.forward, transform.forward + transform.up);//Quaternion.AngleAxis(0,transform.forward + transform.up);
         obj.transform.rotation = look;
-        SoundManager.Instance.PlayFrostWall();
+        SoundManager.Instance.PlayFrost();
     }
 }

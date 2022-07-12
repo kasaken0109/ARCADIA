@@ -14,36 +14,44 @@ public class EnemyBossManager : MonoBehaviour, IDamage
 
     [SerializeField]
     [Tooltip("HP")]
-    private int m_hp = 100;
+    int m_hp = 100;
 
     [SerializeField]
     [Tooltip("怯み値")]
     [Range(1, 100)]
-    private int m_rate;
+    int m_rate;
+
+    [SerializeField]
+    GameObject _poison = default;
 
     [SerializeField]
     [Tooltip("Animator")]
-    private Animator m_animator = null;
+    Animator m_animator = null;
 
     [SerializeField]
     [Tooltip("死亡時に発生する死体")]
-    private GameObject m_deathBody = null;
+    GameObject m_deathBody = null;
 
     [SerializeField]
     [Tooltip("地面から砂が発生する攻撃のエフェクト")]
-    private GameObject m_sandEffect = null;
+    GameObject m_sandEffect = null;
 
     [SerializeField]
-    private Image hpSlider;
+    Image hpSlider;
 
-    private bool IsCritical = false;//特殊攻撃のいフラグ
+    bool IsCritical = false;//特殊攻撃のいフラグ
 
     int maxHp;
     int hitRate = 0;//怯み値
     int rateTemp;
     int count = 0;//特殊攻撃の回数
+    float hitstopRate = 0.5f;
 
     float hitSpeed = 1f;//ヒットストップのスピード
+
+    GameObject me;
+
+    Cinemachine.CinemachineImpulseSource impulseSource;
 
     #region EnemyAnimatorHash
     int hpHash = Animator.StringToHash("HP");
@@ -51,12 +59,24 @@ public class EnemyBossManager : MonoBehaviour, IDamage
 
     #endregion
 
-    public void AddDamage(int damage)
+    void Awake()
     {
-        hitSpeed = (float)(damage / 10f);
+        Instance = this;
+        maxHp = m_hp;
+        TryGetComponent(out impulseSource);
+        me = gameObject;
+    }
+
+    public void AddDamage(int damage,ref GameObject call)
+    {
+        if (call.CompareTag("Player")) call.GetComponent<PlayerControll>().AddStanceValue(0.2f);
         StopCoroutine(HitStop());
-        StartCoroutine(HitStop());
-        MotorShaker.Instance.Call(ShakeType.Hit, 8 * damage / maxHp);
+        if (damage >= Mathf.CeilToInt(m_rate * hitstopRate))
+        {
+            StartCoroutine(HitStop());
+            MotorShaker.Instance.Call(ShakeType.Hit, 8 * damage / maxHp);
+        }
+        
         if (m_hp < maxHp * 0.5f && count == 0)
         {
             StartCoroutine(nameof(DeathCombo));
@@ -95,6 +115,7 @@ public class EnemyBossManager : MonoBehaviour, IDamage
                 1f  // 時間（秒）
                 ).SetEase(Ease.OutCubic);
             Instantiate(m_deathBody,this.transform.position,this.transform.rotation);
+            FindObjectOfType<CameraController>().RetargetTargetCam();
             GameManager.Instance.SetGameState(GameState.PLAYERWIN);
             Destroy(this.gameObject);
         }
@@ -106,18 +127,10 @@ public class EnemyBossManager : MonoBehaviour, IDamage
     /// <returns></returns>
     IEnumerator HitStop()
     {
-        var source = GetComponent<Cinemachine.CinemachineImpulseSource>();
-        source.GenerateImpulse();
+        impulseSource.GenerateImpulse();
         Time.timeScale = 0.5f;
-        yield return new WaitForSeconds(0.1f * hitSpeed);
+        yield return new WaitForSeconds(0.1f);
         Time.timeScale = 1;
-    }
-
-    // Start is called before the first frame update
-    void Awake()
-    {
-        Instance = this;
-        maxHp = m_hp;
     }
 
     IEnumerator DeathCombo()
@@ -126,7 +139,6 @@ public class EnemyBossManager : MonoBehaviour, IDamage
         count++;
         rateTemp = hitRate;
         hitRate = -500;
-        yield return new WaitForSeconds(5f);
         float distance = Vector3.Distance(GameManager.Player.transform.position, gameObject.transform.position);
         
         int type = distance >= 7 ? 5 : 4;
@@ -135,6 +147,31 @@ public class EnemyBossManager : MonoBehaviour, IDamage
         yield return new WaitForSeconds(2f);
         IsCritical = false;
         hitRate = rateTemp;
+    }
+
+    IEnumerator SlipDamage(int slipValue, float slipInterval,float slipDuraration)
+    {
+        float time = 0;
+        float intervalTime = 0;
+        _poison.SetActive(true);
+        while (time <= slipDuraration)
+        {
+            time += Time.deltaTime;
+            intervalTime += Time.deltaTime;
+            yield return null;
+            if (intervalTime >= slipInterval)
+            {
+                AddDamage(slipValue,ref me);
+                intervalTime = 0;
+            }
+        }
+        _poison.SetActive(false);
+
+    }
+
+    public void AddSlipDamage(int slipValue, float slipInterval, float slipDuraration)
+    {
+        StartCoroutine(SlipDamage(slipValue,slipInterval,slipDuraration));
     }
 
     public void SpawnEffects() => m_sandEffect.SetActive(true);

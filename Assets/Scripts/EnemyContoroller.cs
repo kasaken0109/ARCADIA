@@ -62,17 +62,6 @@ public class EnemyContoroller : MonoBehaviour
     }
 
     public void SetPosition() => agent.SetDestination(transform.position);
-    public void BreathAttack()
-    {
-        Instantiate(m_breath,m_spwanBreath.position, m_spwanBreath.rotation);
-        SoundManager.Instance.PlayFireB();
-    }
-
-    public void FinalBreathAttack()
-    {
-        Instantiate(m_finalBreath, m_spwanBreath.position, m_spwanBreath.rotation);
-        SoundManager.Instance.PlayFireB();
-    }
 
     public void JumpAttackEffect()
     {
