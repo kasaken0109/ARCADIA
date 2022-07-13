@@ -7,27 +7,19 @@ public class PassiveDisplayController : MonoBehaviour
 {
     [SerializeField]
     [Tooltip("エフェクトの発生ポイント")]
-    Transform m_effectBirthPoint = default;
-    [SerializeField]
-    private Image[] effectDisplays;
-    [SerializeField]
-    private Sprite m_defaultImage;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    Transform _effectBirthPoint = default;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [SerializeField]
+    [Tooltip("")]
+    Image[] _effectDisplays;
 
-    public void SetDisplay(ref PassiveSkill passiveSkill)
+    [SerializeField]
+    Sprite _defaultImage;
+
+    public void SetDisplay(ref CustomSkill passiveSkill)
     {
-        var obj = Instantiate(passiveSkill.Effect, m_effectBirthPoint.position, m_effectBirthPoint.rotation, m_effectBirthPoint);
+        var obj = Instantiate(passiveSkill.Effect, _effectBirthPoint.position, _effectBirthPoint.rotation, _effectBirthPoint);
         var particle = obj.GetComponent<ParticleSystem>().main;
-        particle.duration = passiveSkill.EffectableTime;
+        //particle.duration = passiveSkill.EffectableTime;
     }
 }

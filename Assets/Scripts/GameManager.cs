@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using Cinemachine;
 using DG.Tweening;
 
+[System.Serializable]
 public enum GameState
 {
     START,
@@ -20,33 +21,33 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField]
     [Tooltip("プレイヤーのバーチャルカメラ")]
-    private CinemachineVirtualCamera virtualCamera = default;
+    CinemachineVirtualCamera virtualCamera = default;
 
     [SerializeField]
     [Tooltip("メニューオブジェクト")]
-    private GameObject menu = default;
+    GameObject menu = default;
 
     [SerializeField]
     [Tooltip("勝利オブジェクト")]
-    private GameObject m_win = null;
+    GameObject m_win = null;
 
     [SerializeField]
     [Tooltip("勝利時のゲートオブジェクト")]
-    private GameObject m_gate = null;
+    GameObject m_gate = null;
 
     [SerializeField]
     [Tooltip("敗北オブジェクト")]
-    private GameObject m_lose = null;
+    GameObject m_lose = null;
 
     [SerializeField]
     [Tooltip("照準のUI,バレットの参照用")]
-    private RectTransform m_crosshairUi = null;
+    RectTransform m_crosshairUi = null;
 
     [SerializeField]
-    private PlayerManager m_player = default;
+    PlayerManager m_player = default;
 
     [SerializeField]
-    private TimerManager m_timerManager = default;
+    TimerManager m_timerManager = default;
 
     public static GameManager Instance = null;
 
@@ -82,8 +83,8 @@ public class GameManager : MonoBehaviour
         switch (myGameState)
         {
             case GameState.START:
-                m_timerManager.IsPlaying = true;
                 StartCoroutine(m_timerManager.TimeUpdate());
+                m_timerManager.IsPlaying = true;
                 break;
             case GameState.PLAYING:
                 break;
@@ -112,7 +113,7 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.PLAYERLOSE:
                 m_lose.SetActive(true);
-                m_lose.GetComponentInChildren<Button>().onClick.Invoke();
+                StartCoroutine(OnLose());
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.Confined;
                 m_timerManager.SaveTime();
@@ -120,6 +121,14 @@ public class GameManager : MonoBehaviour
             default:
                 break;
         }
+    }
+
+
+    const float waitCount = 10f;
+    IEnumerator OnLose()
+    {
+        yield return new WaitForSeconds(waitCount);
+        m_lose.GetComponentInChildren<Button>().onClick.Invoke();
     }
 
     /// <summary>
@@ -138,11 +147,11 @@ public class GameManager : MonoBehaviour
     /// <param name="value">ゲームの状態</param>
     public void SetGameState(int value) => SetGameState((GameState)value);
 
-    private GameState myGameState;
+    GameState myGameState;
 
     public GameState GameStatus => myGameState;
 
-    private void OnDestroy()
+    void OnDestroy()
     {
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;

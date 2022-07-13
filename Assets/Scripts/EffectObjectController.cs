@@ -9,12 +9,12 @@ public class EffectObjectController : MonoBehaviour,IDamage
 {
     [SerializeField]
     [Tooltip("発生するエフェクト")]
-    private GameObject m_effect;
+    GameObject m_effect;
     [SerializeField]
-    private GameObject m_item;
+    GameObject m_item;
     [SerializeField]
-    private GameObject m_mine;
-    public void AddDamage(int damage)
+    GameObject m_mine;
+    public void AddDamage(int damage,ref GameObject call)
     {
         StartCoroutine(nameof(InstanceObj));
     }

@@ -82,7 +82,7 @@ public class LayserModuleController : MonoBehaviour
                 if (hitObject.tag == "Enemy")
                 {
                     IsSounded = !IsSounded ? true : false;
-                    hitObject.GetComponentInParent<IDamage>().AddDamage(m_bullet.Damage);
+                    hitObject.GetComponentInParent<IDamage>().AddDamage(m_bullet.Damage,ref m_effect);
                     if(!IsEnd)Instantiate(m_effect, hitPosition, Quaternion.identity);
                 }
                 if (!IsHitSound)

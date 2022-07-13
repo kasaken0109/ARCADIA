@@ -30,7 +30,7 @@ public class InformationPresenter : MonoBehaviour
         _InformExplain.text = bullet.ExplainText;
     }
 
-    public void SetExplanation(PassiveSkill skill)
+    public void SetExplanation(CustomSkill skill)
     {
         if (!skill) return;
         _InformName.text = "‹@”\–¼ : " + skill.SkillName;

@@ -16,6 +16,7 @@ public class DollyCamController : MonoBehaviour
     [SerializeField]
     [Tooltip("ˆÚ“®‚É‚©‚©‚éŽžŠÔ")]
     float _moveDuraration = 4f;
+
     CinemachineVirtualCamera _cinemachine;
     CinemachineTrackedDolly _dolly;
     // Start is called before the first frame update
