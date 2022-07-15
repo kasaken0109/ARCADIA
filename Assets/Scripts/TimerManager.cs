@@ -11,32 +11,29 @@ public class TimerManager : MonoBehaviour
 {
     [SerializeField]
     [Tooltip("クエストの制限時間")]
-    private int timeLimit = 180;
+    private int _timeLimit = 180;
 
     [SerializeField]
     [Tooltip("時間切れの警告時間")]
-    private int timeWarning = 20;
+    private int _timeWarning = 20;
 
     [SerializeField]
     [Tooltip("残り時間の表示テキスト")]
     private Text m_timeText = null;
 
     [SerializeField]
-    [Tooltip("ゲームオーバーＵＩ")]
-    private GameObject m_gameOver = null;
-    [SerializeField]
-    [Tooltip("ゲームクリアＵＩ")]
-    private GameObject m_gameClear = null;
-    
-    Animation m_anim = null;
-    int maxTimeLimit;
+    private Animation m_anim = null;
+
+    /// <summary>現在の時間</summary>
+    int time;
+    /// <summary>ゲームプレイ中か</summary>
     bool isPlaying = false;
+    /// <summary>ゲームプレイ中か</summary>
     public bool IsPlaying { set => isPlaying = value; }
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         TimerSetUp();
-        m_anim = GetComponent<Animation>();
     }
 
     /// <summary>
@@ -45,35 +42,38 @@ public class TimerManager : MonoBehaviour
     private void TimerSetUp()
     {
         //クリアランク判定用にクエスト制限時間を保存
-        PlayerPrefs.SetInt("MaxTime", timeLimit);
+        PlayerPrefs.SetInt("MaxTime", _timeLimit);
         PlayerPrefs.Save();
         ///
-
-        m_gameClear.SetActive(false);
-        m_gameOver.SetActive(false);
-        maxTimeLimit = timeLimit;
+        time = _timeLimit;
     }
 
+    /// <summary>
+    /// タイマーのカウントダウンを進める
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator TimeUpdate()
     {
-        m_timeText.text = "制限時間：" + timeLimit;
-        while (timeLimit > 0)
+        m_timeText.text = "制限時間：" + time;
+        while (time > 0)
         {
             if (isPlaying)
             {
-                timeLimit--;
-                m_timeText.text = "制限時間：" + timeLimit;
+                time--;
+                m_timeText.text = "制限時間：" + time;
                 yield return new WaitForSeconds(1);
+                if (time <= _timeWarning)
+                {
+                    //アニメーションとフォントの色を変え、警告
+                    m_timeText.color = Color.red;
+                    m_anim.Play();
+                }
             }
-            if (timeLimit <= timeWarning)
-            {
-                //アニメーションとフォントの色を変え、警告
-                m_timeText.color = Color.red;
-                m_anim.Play();
-            }
+            
             yield return null;
         }
-        GameManager.Instance.SetGameState(GameManager.GameState.PLAYERLOSE);
+        //時間切れになったらプレイヤーの負け
+        GameManager.Instance.SetGameState(GameState.PLAYERLOSE);
     }
 
     /// <summary>
@@ -81,15 +81,16 @@ public class TimerManager : MonoBehaviour
     /// </summary>
     public void SaveTime()
     {
-        if (GameManager.Instance.GameStatus == GameManager.GameState.PLAYERWIN)
+        if (GameManager.Instance.GameStatus == GameState.PLAYERWIN)
         {
             //経過時間を計算
-            PlayerPrefs.SetInt("TimeScore", maxTimeLimit - timeLimit);
+            PlayerPrefs.SetInt("TimeScore", _timeLimit - time);
             PlayerPrefs.Save();
+            isPlaying = false;
         }
-        else if (GameManager.Instance.GameStatus == GameManager.GameState.PLAYERLOSE)
+        else if (GameManager.Instance.GameStatus == GameState.PLAYERLOSE)
         {
-            PlayerPrefs.SetInt("TimeScore", maxTimeLimit);
+            PlayerPrefs.SetInt("TimeScore", _timeLimit);
             PlayerPrefs.Save();
         }
     }

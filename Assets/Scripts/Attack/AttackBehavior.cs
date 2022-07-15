@@ -7,22 +7,23 @@ using UnityEngine;
 public class AttackSet 
 {
     public AttackMotion attackMotion;
-    //public I
 }
 
 [System.Serializable]
 public class AttackBehavior :IInputBehavior
 {
     [SerializeField]
+    [Tooltip("使用するアニメーター")]
     Animator _animator = default;
 
     [SerializeField]
+    [Tooltip("発動するモーション")]
     AttackMotion _attackMotion = default;
-    public bool IsEnd => throw new System.NotImplementedException();
+    public bool IsEnd => _isEnd;
 
-    private bool _isEnd = false;
+    bool _isEnd = false;
 
-    private float time = 0;
+    float time = 0;
 
     public void Execute()
     {
@@ -33,18 +34,5 @@ public class AttackBehavior :IInputBehavior
             time += Time.deltaTime;
         }
         _isEnd = true;
-
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
