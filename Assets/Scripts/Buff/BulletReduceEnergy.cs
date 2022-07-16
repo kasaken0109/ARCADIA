@@ -20,7 +20,12 @@ public class BulletReduceEnergy:IPassiveAction
         throw new System.NotImplementedException();
     }
 
-    public void OnEnd()
+    public void Execute()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Execute(GameObject set)
     {
         throw new System.NotImplementedException();
     }
