@@ -22,6 +22,7 @@ public class EnemyBossManager : MonoBehaviour, IDamage
     int m_rate;
 
     [SerializeField]
+    [Tooltip("毒状態に発生するエフェクト")]
     GameObject _poison = default;
 
     [SerializeField]
@@ -46,8 +47,10 @@ public class EnemyBossManager : MonoBehaviour, IDamage
     int rateTemp;
     int count = 0;//特殊攻撃の回数
     float hitstopRate = 0.5f;
-
     float hitSpeed = 1f;//ヒットストップのスピード
+    const float coefficient = 8f;
+    const float actionHpRateHalf = 0.5f;
+    const float actionHpRateLittle = 0.2f;
 
     GameObject me;
 
@@ -74,14 +77,14 @@ public class EnemyBossManager : MonoBehaviour, IDamage
         if (damage >= Mathf.CeilToInt(m_rate * hitstopRate))
         {
             StartCoroutine(HitStop());
-            MotorShaker.Instance.Call(ShakeType.Hit, 8 * damage / maxHp);
+            MotorShaker.Instance.Call(ShakeType.Hit, coefficient * damage / maxHp);
         }
         
-        if (m_hp < maxHp * 0.5f && count == 0)
+        if (m_hp < maxHp * actionHpRateHalf && count == 0)
         {
             StartCoroutine(nameof(DeathCombo));
         }
-        else if (m_hp < maxHp * 0.2f && count == 1)
+        else if (m_hp < maxHp * actionHpRateLittle && count == 1)
         {
             StopCoroutine(nameof(DeathCombo));
             StartCoroutine(nameof(DeathCombo));
