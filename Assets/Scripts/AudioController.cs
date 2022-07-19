@@ -9,46 +9,58 @@ using UnityEngine;
 public class AudioController : MonoBehaviour
 {
     [SerializeField]
-    private AudioClip[] m_sounds;
+    [Tooltip("プレイヤーに関する音")]
+    AudioClip[] m_sounds;
 
-    [SerializeField]
-    private Animator m_anim = default;
+    /// <summary>使用するAnimator</summary>
+    Animator _anim = default;
 
-    [SerializeField]
-    private float pitchRange = 0.1f;
-
-    private AudioSource source;
+    /// <summary>使用するAudioSource</summary>
+    AudioSource _source;
     
-    // Start is called before the first frame update
     void Start()
     {
-        source = GetComponents<AudioSource>()[0];
+        _source = GetComponents<AudioSource>()[0];
+        TryGetComponent(out _source);
+        TryGetComponent(out _anim);
     }
 
+    /// <summary>
+    /// 足音を鳴らす
+    /// </summary>
     public void PlayFootstepSE()
     {
-        if (m_anim.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+        if (_anim.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
         {
-            source.PlayOneShot(m_sounds[0]);
+            _source.PlayOneShot(m_sounds[0]);
         }
-        else if (m_anim.GetCurrentAnimatorStateInfo(0).IsName("Run"))
+        else if (_anim.GetCurrentAnimatorStateInfo(0).IsName("Run"))
         {
-            source.PlayOneShot(m_sounds[1]);
+            _source.PlayOneShot(m_sounds[1]);
         }
     }
 
+    /// <summary>
+    /// ジャンプ音を鳴らす
+    /// </summary>
     public void PlayJumpSE()
     {
-        source.PlayOneShot(m_sounds[2]);
+        _source.PlayOneShot(m_sounds[2]);
     }
 
+    /// <summary>
+    /// 近接通常攻撃の音を鳴らす
+    /// </summary>
     public void PlaySlashSE()
     {
-        source.PlayOneShot(m_sounds[3]);
+        _source.PlayOneShot(m_sounds[3]);
     }
 
+    /// <summary>
+    /// 近接特殊攻撃の音を鳴らす
+    /// </summary>
     public void PlaySpecialSlashSE()
     {
-        source.PlayOneShot(m_sounds[4]);
+        _source.PlayOneShot(m_sounds[4]);
     }
 }

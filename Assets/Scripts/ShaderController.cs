@@ -3,23 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// タイトルのShaderの処理を行う
+/// </summary>
 public class ShaderController : MonoBehaviour
 {
     [SerializeField]
-    GameObject _gameObject = default;
-    [SerializeField]
+    [Tooltip("設定するマテリアル")]
     Material _set = default;
-    float _time = 0;
-    bool IsStopped = false;
-    Image render; 
-    Material set;
+    /// <summary>現在の時間</summary>
+    float time = 0;
+    /// <summary>現在のシーンに移るまでの時間</summary>
     float timeUntilSceneStart;
+    /// <summary>マテリアルを設定したか</summary>
+    bool IsSetMaterial = false;
+    /// <summary>セット対象</summary>
+    Image render;
+    
 
     // Start is called before the first frame update
     void Start()
     {
-        _time = 0;
-        render = GetComponent<Image>();
+        time = 0;
+        TryGetComponent(out render);
         render.material = null;
         timeUntilSceneStart = Time.time;
     }
@@ -27,16 +33,20 @@ public class ShaderController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!IsStopped) _time += Time.deltaTime;
+        if (!IsSetMaterial) time += Time.deltaTime;
     }
 
+    /// <summary>
+    /// 消えるマテリアルを設定する
+    /// </summary>
     public void SetMaterialProparty()
     {
-        IsStopped = false;
+        IsSetMaterial = false;
         if (render)
         {
             render.material = _set;
-            render.material.SetFloat("_TimeScale", timeUntilSceneStart + _time);
+            //シーン開始からの時間をセット
+            render.material.SetFloat("_TimeScale", timeUntilSceneStart + time);
         }
         else
         {
