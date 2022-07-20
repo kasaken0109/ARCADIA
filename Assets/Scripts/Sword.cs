@@ -12,9 +12,10 @@ public class Sword : MonoBehaviour,IWeapon
     [Tooltip("有効にする剣のコライダー")]
     GameObject[] _activeCollider;
 
-    [SerializeField]
-    [Tooltip("剣のコライダーコントローラー")]
-    AttackcolliderController _controller;
+    /// <summary>剣のコライダーコントローラー</summary>
+    AttackcolliderController[] _controller;
+
+    Coroutine[] attackColliderCoroutine;
     
     /// <summary>プレイヤーのrb</summary>
     Rigidbody rb;
@@ -23,8 +24,6 @@ public class Sword : MonoBehaviour,IWeapon
     const float normalActiveTime = 0.5f;
     /// <summary>スペシャル攻撃の当たり判定発生時間</summary>
     const float specialActiveTime = 1f;
-    /// <summary>ジャンプ距離</summary>
-    const float jumpUpDistance = 0.5f;
     /// <summary>浮く距離</summary>
     const float floatUpDistance = 2f;
     /// <summary>浮く時間</summary>
@@ -38,6 +37,17 @@ public class Sword : MonoBehaviour,IWeapon
     void Start()
     {
         GameManager.Player.TryGetComponent(out rb);
+        attackColliderCoroutine = new Coroutine[_activeCollider.Length];
+        ColliderSetUp();
+    }
+
+    void ColliderSetUp()
+    {
+        _controller = new AttackcolliderController[_activeCollider.Length];
+        for (int i = 0; i < _activeCollider.Length; i++)
+        {
+            _activeCollider[i].TryGetComponent(out _controller[i]);
+        }
     }
     /// <summary>
     /// 通常攻撃の当たり判定を有効にする
@@ -53,7 +63,21 @@ public class Sword : MonoBehaviour,IWeapon
     public void SpecialAttack()
     {
         ColliderGenerater.Instance.StartActiveCollider(_activeCollider[1], specialActiveTime);
-        rb.DOMoveY(0,jumpUpDistance);
+    }
+
+    /// <summary>
+    /// 剣の当たり判定を有効にする
+    /// </summary>
+    /// <param name="colliderIndex">有効にするコライダーID</param>
+    /// <param name="activeDuraration">有効時間</param>
+    /// <param name="power">攻撃力</param>
+    public void ActiveAttackCollider(int colliderIndex, float activeDuraration,int power)
+    {
+        //ID範囲外時の処理
+        if (colliderIndex < 0 || colliderIndex >= _activeCollider.Length) colliderIndex = 0;
+        _controller[colliderIndex].AttackPower = power;
+        attackColliderCoroutine[colliderIndex] = null;
+        attackColliderCoroutine[colliderIndex] = StartCoroutine(ColliderGenerater.GenerateCollider(_activeCollider[colliderIndex], activeDuraration));
     }
 
     /// <summary>
@@ -65,15 +89,11 @@ public class Sword : MonoBehaviour,IWeapon
     }
 
     /// <summary>
-    /// 剣の軌跡を表示する、ダメージを計算する
+    /// 剣の軌跡を表示する
     /// </summary>
     public void StartEmitting()
     {
         GetComponentInChildren<TrailRenderer>().emitting = true;
-        
-        int dmg = (int)Mathf.Abs(transform.position.y - GameObject.FindGameObjectWithTag("Floor").transform.position.y) * damageRate;
-        int correctDmg = dmg >= maxDamage ? maxDamage : dmg;
-        _controller.AddDamageCount(correctDmg);
     }
 
     /// <summary>
@@ -81,6 +101,8 @@ public class Sword : MonoBehaviour,IWeapon
     /// </summary>
     public void FloatUp()
     {
-        rb.DOMoveY(GameManager.Player.transform.position.y + floatUpDistance, floatUpDuraration);
+        rb.constraints = RigidbodyConstraints.FreezeAll;
+        rb.DOMoveY(GameManager.Player.transform.position.y + floatUpDistance, floatUpDuraration)
+            .OnComplete(() => rb.constraints = RigidbodyConstraints.FreezeRotation);
     }
 }
