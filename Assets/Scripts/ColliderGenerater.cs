@@ -8,18 +8,18 @@ using UnityEngine;
 public class ColliderGenerater : MonoBehaviour
 {
     public static ColliderGenerater Instance { get; private set; }
-    private GameObject hitCollider;
-    private float waitTime;
+    GameObject hitCollider;
+    float waitTime;
 
     private void Awake()
     {
         Instance = this;
     }
-    public IEnumerator GenerateCollider(GameObject hitCollider ,float waitTime)
+    public static IEnumerator GenerateCollider(GameObject hitCollider ,float waitTime)
     {
-        hitCollider.gameObject.GetComponent<AttackcolliderController>().SetActiveAttack(true);
+        hitCollider.gameObject.SetActive(true);
         yield return new WaitForSeconds(waitTime);
-        hitCollider.gameObject.GetComponent<AttackcolliderController>().SetActiveAttack(false);
+        hitCollider.gameObject.SetActive(false);
     }
 
     public void StartActiveCollider(GameObject hitCollider, float waitTime)
