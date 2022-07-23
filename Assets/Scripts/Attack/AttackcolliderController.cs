@@ -9,103 +9,55 @@ using UnityEngine.Events;
 public class AttackcolliderController : MonoBehaviour
 {
     [SerializeField]
-    [Tooltip("攻撃力")]
-    private int m_attackPower = 15;
-
-    [SerializeField]
-    [Tooltip("スタンス値の上昇値")]
-    [Range(-1, 1)]
-    private float m_upStanceValue = 0.1f;
+    [Tooltip("攻撃対象のタグ名")]
+    string m_opponentTagName = "Player";
 
     [SerializeField]
     [Tooltip("衝突時に発生するエフェクト")]
-    private GameObject m_hitEffect = null;
-
-    [SerializeField]
-    [Tooltip("呼ぶオブジェクト")]
-    private GameObject _call;
+    GameObject m_hitEffect = null;
 
     [SerializeField]
     [Tooltip("ヒットサウンド")]
-    private AudioClip m_hit;
+    AudioClip m_hit;
 
-    [SerializeField]
-    [Tooltip("攻撃対象のタグ名")]
-    private string m_opponentTagName = "Player";
+    /// <summary>呼ぶオブジェクト</summary>
+    GameObject call;
+    /// <summary>攻撃が有効かどうか</summary>
+    bool canHit;
 
-    [Tooltip("攻撃が有効かどうか")]
-    private bool CanHit;
+    public bool CanHit { get => canHit; set => canHit = value; }
+    /// <summary>攻撃力</summary>
+    int attackPower = 0;
 
-    private float attackCorrectionValue = 1f;
+    public int AttackPower {set => attackPower = value; }
 
-    private float defenceCorrectionValue = 1f;
-
-    private int attackPower = 0;
-
-    public int AttackPower => attackPower;
-
-    private int frostattackPower = 0;
-
-    private void Start()
+    void Start()
     {
-        CanHit = true;
-        SetActiveAttack(false);
-    }
-    public void SetActiveAttack(bool value)
-    {
-        attackPower = value ? m_attackPower : 0;
-        frostattackPower = value ? 1 : 0;
-
-        CanHit = value ? true : false;
-    }
-    public void StartAttackCorrectionValue(float value, float time)
-    {
-        StopCoroutine(nameof(SetAttackEffectTime));
-        StartCoroutine(SetAttackEffectTime(value, time));
+        canHit = true;
+        call = gameObject;
     }
 
-    IEnumerator SetAttackEffectTime(float value, float time)
+    private void OnEnable()
     {
-        var setValue = attackCorrectionValue > value ? attackCorrectionValue : value;
-        attackCorrectionValue = setValue;
-        yield return new WaitForSeconds(time);
-        attackCorrectionValue = 1f;
+        canHit = true;
     }
 
-    public void StartDefenceCorrectionValue(float value, float time)
+    void OnTriggerEnter(Collider other)
     {
-        StopCoroutine(nameof(SetDefenceEffectTime));
-        StartCoroutine(SetDefenceEffectTime(value, time));
-    }
-
-    IEnumerator SetDefenceEffectTime(float value, float time)
-    {
-        var setValue = defenceCorrectionValue > value ? defenceCorrectionValue : value;
-        defenceCorrectionValue = setValue;
-        yield return new WaitForSeconds(time);
-        attackCorrectionValue = 1f;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Item")) other.gameObject.GetComponentInParent<IDamage>().AddDamage(attackPower,ref _call);
-        
-        if (other.CompareTag(m_opponentTagName) && CanHit)
+        if (!canHit) return;//連続ヒットを防止する
+        if (other.CompareTag(m_opponentTagName))
         {
+            //ダメージを与える
             var idmg = other.gameObject.GetComponentInParent<IDamage>();
             idmg = idmg == null ? other.gameObject.GetComponent<IDamage>() : idmg;
-            idmg.AddDamage(Mathf.CeilToInt(attackPower / defenceCorrectionValue),ref _call);
+            idmg.AddDamage(attackPower, ref call);
 
+            //ヒット音、エフェクトを再生する
             if (m_hit)SoundManager.Instance.PlayHit(m_hit,gameObject.transform.position);
             if(m_hitEffect) Instantiate(m_hitEffect, other.ClosestPoint(transform.position), GameManager.Player.transform.rotation);
-            CanHit = false;
+
+            //ヒット処理を完了したとみなす
+            canHit = false;
         }
     }
-
-    /// <summary>
-    /// 追加ダメージを返す
-    /// </summary>
-    /// <param name="addDamage"></param>
-    /// <returns></returns>
-    public int AddDamageCount(int addDamage) { return m_attackPower + addDamage; }
 }
