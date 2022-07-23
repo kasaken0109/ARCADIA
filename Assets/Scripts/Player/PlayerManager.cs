@@ -8,10 +8,18 @@ using System.Linq;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
+public enum PlayerState
+{
+    OnField,
+    InAir,
+    Attacking,
+    Invisible,
+    Stun,
+}
 /// <summary>
 /// プレイヤーのパラメーター(体力、ムテキ時間等)を管理するクラス
 /// </summary>
-[RequireComponent(typeof(PlayerControll))]
+[RequireComponent(typeof(PlayerMoveController))]
 public class PlayerManager : MonoBehaviour,IDamage
 {
     public static PlayerManager Instance { get; private set; }
@@ -67,9 +75,13 @@ public class PlayerManager : MonoBehaviour,IDamage
     /// <summary>プレイヤーのアニメーター</summary>
     Animator _anim = null;
     /// <summary>playerControll</summary>
-    PlayerControll _playerControll;
+    PlayerMoveController _playerControll;
     /// <summary>ムテキ時間を管理するバフ値</summary>
     BufferParameter _invisibleTime;
+
+    PlayerState playerState = PlayerState.OnField;
+
+    public PlayerState PlayerState { get => playerState; set => playerState = value; }
     
     VolumeProfile _volumeProfile;
     ChromaticAberration chromaticAberration;
@@ -247,8 +259,10 @@ public class PlayerManager : MonoBehaviour,IDamage
             x.speed = _slowRate;
         });
         DOTween.To(() => _volume.weight, (x) => _volume.weight = x, 1, 0.5f);
+        playerState = PlayerState.Invisible;
         yield return new WaitForSeconds(_changeTime);
         DOTween.To(() => _volume.weight, (x) => _volume.weight = x, 0, 0.5f);
         if(animators.Count != 0)animators.ForEach(x => x.speed = 1);
+        playerState = PlayerState.OnField;
     }
 }
