@@ -2,13 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-[System.Serializable]
-public class AttackSet 
-{
-    public AttackMotion attackMotion;
-}
-
 [System.Serializable]
 public class AttackBehavior :IInputBehavior
 {

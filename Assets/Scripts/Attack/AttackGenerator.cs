@@ -25,31 +25,31 @@ public class AttackGenerator : MonoBehaviour
 
     public void GenerateHeadAttackCollider(float activeTime)
     {
-        m_head.gameObject.GetComponent<AttackcolliderController>().SetActiveAttack(true);
+        m_head.gameObject.SetActive(true);
         StartCoroutine(WaitCount(m_head.gameObject, activeTime));
     }
 
     public void GenerateBodyAttackCollider(float activeTime)
     {
-        m_body.gameObject.GetComponent<AttackcolliderController>().SetActiveAttack(true);
+        m_body.gameObject.SetActive(true);
         StartCoroutine(WaitCount(m_body.gameObject, activeTime));
     }
 
     public void GenerateHornAttackCollider(float activeTime)
     {
-        m_horn.gameObject.GetComponent<AttackcolliderController>().SetActiveAttack(true);
+        m_horn.gameObject.SetActive(true);
         StartCoroutine(WaitCount(m_horn.gameObject, activeTime));
     }
     public void GenerateCrowAttackCollider(GameObject collider, float activeTime)
     {
-        m_crow.gameObject.GetComponent<AttackcolliderController>().SetActiveAttack(true);
+        m_crow.gameObject.SetActive(true);
         StartCoroutine(WaitCount(m_crow.gameObject, activeTime));
     }
 
     IEnumerator WaitCount(GameObject collider, float activeTime)
     {
         yield return new WaitForSeconds(activeTime);
-        collider.gameObject.GetComponent<AttackcolliderController>().SetActiveAttack(false);
+        collider.gameObject.SetActive(false);
         StopCoroutine(WaitCount(collider,activeTime));
     }
 }
